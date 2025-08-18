@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Target Winrate MLBB</title>
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-dark: #3730a3;
+      --bg: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 0;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 500px;
+      margin: auto;
+      padding: 24px 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 28px;
+      color: var(--text);
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    label {
+      display: block;
+      margin: 14px 0 6px;
+      font-weight: 600;
+      color: var(--text);
+      font-size: 15px;
+    }
+
+    select, input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      font-size: 16px;
+      margin-bottom: 12px;
+      background: #fff;
+      transition: 0.2s;
+    }
+
+    select:focus, input:focus {
+      border-color: var(--primary);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(79,70,229,0.15);
+    }
+
+    .search-container {
+        position: relative;
+    }
+
+    .hero-dropdown {
+        display: none;
+        position: absolute;
+        background-color: #ffffff;
+        width: 100%;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        max-height: 250px;
+        overflow-y: auto;
+        z-index: 1000;
+        margin-top: -10px;
+        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    }
+
+    .hero-dropdown a {
+        color: var(--text);
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+        font-size: 15px;
+    }
+
+    .hero-dropdown a:hover {
+        background-color: #f1f1f1;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      background: var(--primary);
+      color: #fff;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s;
+      margin-top: 14px;
+    }
+
+    button:hover { background: var(--primary-dark); }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .modal-content {
+      background: #fff;
+      padding: 28px 20px;
+      border-radius: 16px;
+      text-align: center;
+      width: 100%;
+      max-width: 380px;
+      animation: fadeIn 0.3s ease;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.15);
+    }
+
+    .modal-content img {
+      width: 180px;
+      height: auto;
+      border: 2px solid var(--primary);
+      border-radius: 14px;
+      margin-bottom: 18px;
+      object-fit: cover;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .modal-content h2 {
+      margin-bottom: 8px;
+      font-size: 22px;
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .modal-content p {
+      font-size: 16px;
+      margin: 8px 0;
+      color: var(--muted);
+    }
+
+    .modal-content p strong {
+      font-weight: 700;
+      color: #000;
+    }
+    
+    .close-btn {
+      margin-top: 20px;
+      padding: 12px 20px;
+      border: none;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .close-btn:hover { background: var(--primary-dark); }
+
+    @keyframes fadeIn {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 20px;
+        margin-bottom: 20px;
+      }
+
+      .container {
+        padding: 18px 15px;
+      }
+
+      .modal-content {
+        padding: 20px 15px;
+        max-width: 95%;
+      }
+
+      .modal-content img {
+        width: 180px;
+        height: auto;
+      }
+
+      button, .close-btn {
+        font-size: 15px;
+        padding: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Target Winrate MLBB</h1>
+
+    <label for="heroSearch">Pilih Hero</label>
+    <div class="search-container">
+        <input type="text" id="heroSearch" placeholder="Cari & Pilih Hero" onfocus="showDropdown()" onkeyup="filterHeroes()" autocomplete="off">
+        <input type="hidden" id="selectedHeroImg"> <div id="heroList" class="hero-dropdown">
+        </div>
+    </div>
+
+    <label for="total">Jumlah Match</label>
+    <input type="number" id="total" placeholder="Contoh: 500">
+
+    <label for="winrate">Winrate Sekarang (%)</label>
+    <input type="number" id="winrate" placeholder="Contoh: 50">
+
+    <label for="target">Target Winrate (%)</label>
+    <input type="number" id="target" placeholder="Contoh: 60">
+
+    <button onclick="hitungTarget()">Hitung Target</button>
+  </div>
+
+  <div id="resultModal" class="modal">
+    <div class="modal-content">
+      <img id="heroImg" src="" alt="Hero">
+      <h2 id="heroName"></h2>
+      <p id="matchInfo"></p>
+      <p id="targetInfo"></p>
+      <button class="close-btn" onclick="closeModal()">Tutup</button>
+    </div>
+  </div>
+
+  <script>
+    const heroes = [
+        {name: "Aamon", img: "ML/aamon.png"},
+        {name: "Akai", img: "ML/akai.png"},
+        {name: "Aldous", img: "ML/aldous.png"},
+        {name: "Alice", img: "ML/alice.png"},
+        {name: "Alpha", img: "ML/alpha.png"},
+        {name: "Alucard", img: "ML/alucard.png"},
+        {name: "Angela", img: "ML/angela.png"},
+        {name: "Argus", img: "ML/argus.png"},
+        {name: "Arlott", img: "ML/arlott.png"},
+        {name: "Atlas", img: "ML/atlas.png"},
+        {name: "Aurora", img: "ML/aurora.png"},
+        {name: "Aulus", img: "ML/aulus.png"},
+        {name: "Badang", img: "ML/badang.png"},
+        {name: "Baxia", img: "ML/baxia.png"},
+        {name: "Balmond", img: "ML/balmond.png"},
+        {name: "Bane", img: "ML/bane.png"},
+        {name: "Barats", img: "ML/barats.png"},
+        {name: "Beatrix", img: "ML/beatrix.png"},
+        {name: "Belerick", img: "ML/belerick.png"},
+        {name: "Benedetta", img: "ML/benedetta.png"},
+        {name: "Brody", img: "ML/brody.png"},
+        {name: "Bruno", img: "ML/bruno.png"},
+        {name: "Carmilla", img: "ML/carmilla.png"},
+        {name: "Cecilion", img: "ML/cecilion.png"},
+        {name: "Chang'e", img: "ML/change.png"},
+        {name: "Chip", img: "ML/chip.png"},
+        {name: "Chou", img: "ML/chou.png"},
+        {name: "Cici", img: "ML/cici.png"},
+        {name: "Claude", img: "ML/claude.png"},
+        {name: "Clint", img: "ML/clint.png"},
+        {name: "Cyclops", img: "ML/cyclops.png"},
+        {name: "Diggie", img: "ML/diggie.png"},
+        {name: "Dyrroth", img: "ML/dyrroth.png"},
+        {name: "Edith", img: "ML/edith.png"},
+        {name: "Esmeralda", img: "ML/esmeralda.png"},
+        {name: "Estes", img: "ML/estes.png"},
+        {name: "Eudora", img: "ML/eudora.png"},
+        {name: "Fanny", img: "ML/fanny.png"},
+        {name: "Faramis", img: "ML/faramis.png"},
+        {name: "Floryn", img: "ML/floryn.png"},
+        {name: "Franco", img: "ML/franco.png"},
+        {name: "Fredrinn", img: "ML/fredrinn.png"},
+        {name: "Freya", img: "ML/freya.png"},
+        {name: "Gatotkaca", img: "ML/gatotkaca.png"},
+        {name: "Gloo", img: "ML/gloo.png"},
+        {name: "Gord", img: "ML/gord.png"},
+        {name: "Granger", img: "ML/granger.png"},
+        {name: "Grock", img: "ML/grock.png"},
+        {name: "Guinevere", img: "ML/guinevere.png"},
+        {name: "Gusion", img: "ML/gusion.png"},
+        {name: "Hanabi", img: "ML/hanabi.png"},
+        {name: "Hanzo", img: "ML/hanzo.png"},
+        {name: "Harith", img: "ML/harith.png"},
+        {name: "Harley", img: "ML/harley.png"},
+        {name: "Hayabusa", img: "ML/hayabusa.png"},
+        {name: "Helcurt", img: "ML/helcurt.jpeg"},
+        {name: "Hilda", img: "ML/hilda.png"},
+        {name: "Hylos", img: "ML/hylos.png"},
+        {name: "Irithel", img: "ML/irithel.png"},
+        {name: "Ixia", img: "ML/ixia.png"},
+        {name: "Jawhead", img: "ML/jawhead.png"},
+        {name: "Johnson", img: "ML/johnson.png"},
+        {name: "Joy", img: "ML/joy.png"},
+        {name: "Julian", img: "ML/julian.png"},
+        {name: "Kadita", img: "ML/kadita.png"},
+        {name: "Kagura", img: "ML/kagura.png"},
+        {name: "Kaja", img: "ML/kaja.png"},
+        {name: "Karina", img: "ML/karina.png"},
+        {name: "Karrie", img: "ML/karrie.png"},
+        {name: "Khaleed", img: "ML/khaleed.png"},
+        {name: "Khufra", img: "ML/khufra.png"},
+        {name: "Kimmy", img: "ML/kimmy.png"},
+        {name: "Lancelot", img: "ML/lancelot.png"},
+        {name: "Lapu-Lapu", img: "ML/lapu-lapu.png"},
+        {name: "Layla", img: "ML/layla.png"},
+        {name: "Leomord", img: "ML/leomord.png"},
+        {name: "Lesley", img: "ML/lesley.png"},
+        {name: "Ling", img: "ML/ling.png"},
+        {name: "Lolita", img: "ML/lolita.png"},
+        {name: "Luo Yi", img: "ML/luoyi.png"},
+        {name: "Lunox", img: "ML/lunox.png"},
+        {name: "Lylia", img: "ML/lylia.png"},
+        {name: "Martis", img: "ML/martis.png"},
+        {name: "Masha", img: "ML/masha.png"},
+        {name: "Mathilda", img: "ML/mathilda.png"},
+        {name: "Melissa", img: "ML/melissa.png"},
+        {name: "Minotaur", img: "ML/minotaur.png"},
+        {name: "Minsitthar", img: "ML/minsitthar.png"},
+        {name: "Miya", img: "ML/miya.png"},
+        {name: "Moskov", img: "ML/moskov.png"},
+        {name: "Nana", img: "ML/nana.png"},
+        {name: "Natalia", img: "ML/natalia.png"},
+        {name: "Nolan", img: "ML/nolan.png"},
+        {name: "Novaria", img: "ML/novaria.png"},
+        {name: "Odette", img: "ML/odette.png"},
+        {name: "Paquito", img: "ML/paquito.png"},
+        {name: "Pharsa", img: "ML/pharsa.png"},
+        {name: "Phoveus", img: "ML/phoveus.png"},
+        {name: "Popol and Kupa", img: "ML/popol.png"},
+        {name: "Rafaela", img: "ML/rafaela.png"},
+        {name: "Roger", img: "ML/roger.png"},
+        {name: "Ruby", img: "ML/ruby.png"},
+        {name: "Saber", img: "ML/saber.png"},
+        {name: "Suyou", img: "ML/suyou.png"},
+        {name: "Selena", img: "ML/selena.png"},
+        {name: "Silvanna", img: "ML/silvanna.png"},
+        {name: "Sun", img: "ML/sun.png"},
+        {name: "Terizla", img: "ML/terizla.png"},
+        {name: "Thamuz", img: "ML/thamuz.png"},
+        {name: "Tigreal", img: "ML/tigreal.png"},
+        {name: "Uranus", img: "ML/uranus.png"},
+        {name: "Vale", img: "ML/vale.png"},
+        {name: "Valentina", img: "ML/valentina.png"},
+        {name: "Valir", img: "ML/valir.png"},
+        {name: "Vexana", img: "ML/vexana.png"},
+        {name: "Wanwan", img: "ML/wanwan.png"},
+        {name: "X-Borg", img: "ML/x-borg.png"},
+        {name: "Xavier", img: "ML/xavier.png"},
+        {name: "Yi Sun-shin", img: "ML/yss.png"},
+        {name: "Yin", img: "ML/yin.png"},
+        {name: "Yu Zhong", img: "ML/yz.png"},
+        {name: "Yve", img: "ML/yve.png"},
+        {name: "Zetian", img: "ML/zetian.png"},
+        {name: "Zhask", img: "ML/zhask.png"},
+        {name: "Zhuxin", img: "ML/zhuxin.png"},
+        {name: "Zilong", img: "ML/zilong.png"}
+    ];
+
+    const heroList = document.getElementById("heroList");
+    const heroSearchInput = document.getElementById("heroSearch");
+    const selectedHeroImgInput = document.getElementById("selectedHeroImg");
+
+    heroes.forEach(hero => {
+        const a = document.createElement("a");
+        a.href = "#";
+        a.textContent = hero.name;
+        a.dataset.img = hero.img;
+        a.onclick = (e) => {
+            e.preventDefault();
+            selectHero(hero.name, hero.img);
+        };
+        heroList.appendChild(a);
+    });
+
+    function selectHero(name, img) {
+        heroSearchInput.value = name;
+        selectedHeroImgInput.value = img;
+        hideDropdown();
+    }
+
+    function showDropdown() {
+        heroList.style.display = "block";
+    }
+
+    function hideDropdown() {
+        heroList.style.display = "none";
+    }
+
+    function filterHeroes() {
+        const filter = heroSearchInput.value.toUpperCase();
+        const links = heroList.getElementsByTagName("a");
+        for (let i = 0; i < links.length; i++) {
+            const txtValue = links[i].textContent || links[i].innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                links[i].style.display = "";
+            } else {
+                links[i].style.display = "none";
+            }
+        }
+    }
+
+    window.onclick = function(event) {
+        if (!event.target.matches('#heroSearch')) {
+            hideDropdown();
+        }
+    }
+
+      function hitungTarget() {
+        const hero = heroSearchInput.value;
+        const heroImg = selectedHeroImgInput.value;
+        const total = parseInt(document.getElementById("total").value);
+        const winrate = parseFloat(document.getElementById("winrate").value);
+        const target = parseFloat(document.getElementById("target").value);
+
+        if (!hero || !heroImg || isNaN(total) || isNaN(winrate) || isNaN(target)
+            || total <= 0 || winrate < 0 || winrate > 100 || target <= winrate || target > 100) {
+          alert("Harap isi semua kolom dengan benar! Pastikan hero sudah dipilih dari daftar dan target winrate lebih besar dari winrate sekarang.");
+          return;
+        }
+
+        const winsNow = Math.round(total * (winrate / 100));
+        const losses = total - winsNow;
+        const p_req = target / 100;
+        const minTotal = losses / (1 - p_req);
+
+        let wsNeeded = Math.ceil(minTotal - total);
+        if (wsNeeded < 0) wsNeeded = 0;
+
+        document.getElementById("heroImg").src = heroImg;
+        document.getElementById("heroName").innerText = hero;
+        document.getElementById("matchInfo").innerText = `Match: ${total} | Winrate Saat Ini: ${winrate}%`;
+        document.getElementById("targetInfo").innerHTML = `Untuk mencapai <strong>${target}%</strong> winrate, kamu harus menang <strong>${wsNeeded}</strong> kali berturut-turut.`;
+        document.getElementById("resultModal").style.display = "flex";
+      }
+
+
+    function closeModal() {
+      document.getElementById("resultModal").style.display = "none";
+    }
+  </script>
+</body>
+</html>
