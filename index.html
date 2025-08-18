@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Target Winrate MLBB</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Penting untuk mobile -->
   <style>
     :root {
       --primary: #4f46e5;
@@ -25,27 +26,27 @@
       justify-content: center;
       align-items: flex-start;
       min-height: 100vh;
-      padding: 0;
+      padding: 16px;
     }
 
     .container {
       width: 100%;
-      max-width: 500px;
+      max-width: 480px;
       margin: auto;
-      padding: 24px 20px;
+      padding: 20px;
     }
 
     h1 {
       text-align: center;
-      margin-bottom: 28px;
+      margin-bottom: 20px;
       color: var(--text);
-      font-size: 24px;
+      font-size: 22px;
       font-weight: 700;
     }
 
     label {
       display: block;
-      margin: 14px 0 6px;
+      margin: 12px 0 6px;
       font-weight: 600;
       color: var(--text);
       font-size: 15px;
@@ -55,7 +56,7 @@
       width: 100%;
       padding: 14px;
       border: 1px solid #e5e7eb;
-      border-radius: 12px;
+      border-radius: 10px;
       font-size: 16px;
       margin-bottom: 12px;
       background: #fff;
@@ -78,17 +79,17 @@
         background-color: #ffffff;
         width: 100%;
         border: 1px solid #e5e7eb;
-        border-radius: 12px;
-        max-height: 250px;
-        overflow-y: auto;
+        border-radius: 10px;
+        max-height: 300px;        /* lebih tinggi agar nyaman di-scroll */
+        overflow-y: auto;         /* aktif scroll */
         z-index: 1000;
-        margin-top: -10px;
+        margin-top: 2px;
         box-shadow: 0 8px 16px rgba(0,0,0,0.1);
     }
 
     .hero-dropdown a {
         color: var(--text);
-        padding: 12px 16px;
+        padding: 12px 14px;
         text-decoration: none;
         display: block;
         font-size: 15px;
@@ -102,7 +103,7 @@
       width: 100%;
       padding: 14px;
       border: none;
-      border-radius: 12px;
+      border-radius: 10px;
       background: var(--primary);
       color: #fff;
       font-size: 17px;
@@ -114,6 +115,7 @@
 
     button:hover { background: var(--primary-dark); }
 
+    /* Modal hasil */
     .modal {
       display: none;
       position: fixed;
@@ -126,23 +128,22 @@
 
     .modal-content {
       background: #fff;
-      padding: 28px 20px;
-      border-radius: 16px;
+      padding: 20px;
+      border-radius: 12px;
       text-align: center;
       width: 100%;
-      max-width: 380px;
+      max-width: 360px;
       animation: fadeIn 0.3s ease;
       box-shadow: 0 10px 28px rgba(0,0,0,0.15);
     }
 
     .modal-content img {
-      width: 180px;
+      width: 150px;
       height: auto;
       border: 2px solid var(--primary);
-      border-radius: 14px;
-      margin-bottom: 18px;
+      border-radius: 10px;
+      margin-bottom: 14px;
       object-fit: cover;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       display: block;
       margin-left: auto;
       margin-right: auto;
@@ -150,13 +151,13 @@
 
     .modal-content h2 {
       margin-bottom: 8px;
-      font-size: 22px;
+      font-size: 20px;
       color: var(--text);
       font-weight: 700;
     }
 
     .modal-content p {
-      font-size: 16px;
+      font-size: 15px;
       margin: 8px 0;
       color: var(--muted);
     }
@@ -167,12 +168,12 @@
     }
     
     .close-btn {
-      margin-top: 20px;
-      padding: 12px 20px;
+      margin-top: 16px;
+      padding: 12px;
       border: none;
       background: var(--primary);
       color: #fff;
-      border-radius: 10px;
+      border-radius: 8px;
       cursor: pointer;
       transition: 0.3s;
       font-size: 15px;
@@ -187,28 +188,20 @@
     }
 
     @media (max-width: 480px) {
+      body {
+        padding: 12px;
+      }
       h1 {
         font-size: 20px;
-        margin-bottom: 20px;
+        margin-bottom: 16px;
       }
-
-      .container {
-        padding: 18px 15px;
-      }
-
-      .modal-content {
-        padding: 20px 15px;
-        max-width: 95%;
-      }
-
-      .modal-content img {
-        width: 180px;
-        height: auto;
-      }
-
-      button, .close-btn {
+      input, button {
         font-size: 15px;
         padding: 12px;
+      }
+      .modal-content {
+        max-width: 90%;
+        padding: 16px;
       }
     }
   </style>
@@ -220,8 +213,8 @@
     <label for="heroSearch">Pilih Hero</label>
     <div class="search-container">
         <input type="text" id="heroSearch" placeholder="Cari & Pilih Hero" onfocus="showDropdown()" onkeyup="filterHeroes()" autocomplete="off">
-        <input type="hidden" id="selectedHeroImg"> <div id="heroList" class="hero-dropdown">
-        </div>
+        <input type="hidden" id="selectedHeroImg"> 
+        <div id="heroList" class="hero-dropdown"></div>
     </div>
 
     <label for="total">Jumlah Match</label>
@@ -245,7 +238,7 @@
       <button class="close-btn" onclick="closeModal()">Tutup</button>
     </div>
   </div>
-
+  s
   <script>
     const heroes = [
         {name: "Aamon", img: "ML/aamon.png"},
